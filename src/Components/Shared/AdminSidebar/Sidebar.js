@@ -85,8 +85,8 @@ const navigate = useNavigate();
               </Link>
             </li>
 
-            <li className={`admin-nav-item ${location.pathname === '/productlist' ? 'active' : ''}`}>
-              <Link className="nav-link" to="/productlist" onClick={handleNavItemClick}>
+            <li className={`admin-nav-item ${location.pathname === '/addproduct' ? 'active' : ''}`}>
+              <Link className="nav-link" to="/addproduct" onClick={handleNavItemClick}>
                 <FaCalendarCheck className="admin-nav-icon" />
                 {!collapsed && <span className="link_text">Product List</span>}
               </Link>
