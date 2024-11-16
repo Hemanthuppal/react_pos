@@ -15,6 +15,7 @@ import UserChangePassword from './Components/Pages/Users/ChangePassword/ChangePa
 import UserOrderlist from "./Components/Pages/Users/Orderlist/Orderlist";
 import UserPOS from "./Components/Pages/Users/POS/POS"
 import Login from "./Components/Pages/Login/Login";
+import Barcode from "./Components/Pages/Admin/Product/Barcode/Barcode";
 
 
 
@@ -39,6 +40,7 @@ function App() {
                     <Route path="/userchangepassword" exact element={<UserChangePassword/>}/>
                     <Route path="/userorderlist" exact element={<UserOrderlist/>}/>
                     <Route path="/userpos" exact element={<UserPOS/>}/>
+                    <Route path="/barcode" exact element={<Barcode/>}/>
                     <Route path="/" exact element={<Login/>}/>
                 </Routes>
         

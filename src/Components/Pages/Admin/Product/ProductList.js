@@ -1,37 +1,15 @@
-// ProductList.js
 import React, { useState } from 'react';
 import AdminSidebar from '../../../Shared/AdminSidebar/Sidebar';
 import DataTable from '../../../DataTable/DataTable';
 import { useNavigate } from 'react-router-dom';
-import "./ProductList.css";
+import './ProductList.css';
 import { FaList, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 
-const columns = [
-  { Header: 'Barcode', accessor: 'barcode' },
-  { Header: 'Product', accessor: 'product' },
-  { Header: 'Category', accessor: 'category' },
-  { Header: 'Description', accessor: 'description' },
-  { Header: 'Stock', accessor: 'stock' },
-  { Header: 'Purchase Price', accessor: 'purchasePrice' },
-  { Header: 'Sale Price', accessor: 'salePrice' },
-  { Header: 'Image', accessor: 'image', Cell: ({ cell: { value } }) => <img src={value} alt="Product" style={{ width: '50px' }} /> },
-  {
-    Header: 'Actions',
-    accessor: 'actions',
-    Cell: () => (
-      <div>
-         <FaList className="text-info me-2" />
-         <FaEye className="text-primary me-2" />
-         <FaEdit className="text-success me-2" />
-         <FaTrash className="text-danger me-2" />
-      </div>
-    ),
-  },
-];
+const ProductList = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
-
-
-
+ 
 const data = [
   { barcode: '5120819', product: 'Veg Burger', category: 'Veg', description: 'small p', stock: 997, purchasePrice: 50, salePrice: 80, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnGbzBVxK_aYcz7nnXvHerxgJIJH4QZD0ymQ&s' },
   { barcode: '6121422', product: 'Sugar Packet 5 KG', category: 'Grocery', description: '5KG Sugar Packet', stock: 493, purchasePrice: 120, salePrice: 200, image: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUQEhAWFRUXFxUVFRcVFxIXFRIVFRcXFhYVFRYYHSggGBslGxUVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDg0OGxAQGjciHyYrLS0tMC0wKystLS0tLy8tLSsvLS0tLi8tLjUtLSstLS0tLS0tLS0tLS4tLS0tLS0rLf/AABEIAPgAywMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAABAMFBgcCAQj/xABFEAABAwIDAwcGCgkFAQAAAAABAAIDBBEFEiEGMfATIkFRYXGRFHKBobHRIzI0UlNzkrLB4QcWJDNCYoLS8RU1Q6KzY//EABoBAQACAwEAAAAAAAAAAAAAAAABAgMEBQb/xAAyEQACAQIEAwUHBAMAAAAAAAAAAQIDEQQhMXESMlETFDNBYQVCUoGRsfAiI8HRgqHh/9oADAMBAAIRAxEAPwDuKFBX1HJxuktfKL23X9KoRtYPoD9oe5ZIUpTV4oxTrQg7SZpULODatv0LvEL2Nqo/o3+pW7vU6FO9Uuv3NAhUI2qi+Y//AK+9KVW3NPG7KYpjpfQR29bwo7Cp0JWIpvRmpQskP0g030U/2Y/719/X+l+ZN9hn9ydhU6Fu2p9TWIWUG31J82X7A/uTWHbY000gibnBN7F7QG6AnU37FDozSu0SqsHkmaFCg8tj+kb4hHlkf0jfELGZCdCWmr4mtc8vbZoLjYgmwFzZZ/8AX6k/+v2PzV405S5VcpKpGOrNShZX9faTql+x+aP19pOqX7H5q3YVOhXt6fU1SFlTt9SdUv2PzT8O1NO5ocC7UXF26+1OwqdCHXpr3i7Qqc7SQdbvD818/WaD+bwHvTsanQjvNL4kXKFSHaeDqf4D3qww3EGztLmAgA21tvsDpY9qiVKcVdotGvTk7RY2hCFjMoIQhAJ4w28Eg/lPq1WIaxvH4roRCxeI0OSQsHeztaegdvuW9hJLOLOZ7QjJWmtjy6g0vf2+tQ8g3r/D/AXuGuc3Q68espkTsd38eK2XxLU0VKMtGJci3rHiFS49TgPabjVvWOg/mtM6Bp3ce9UW1GHj4M+cPG3uS6epempJlOKa6+GjPV7VLBAwDVeZ6mJvUo4c8jYv1IfJT1e1WOz1KeXYbac77pWflrG9AVlshV/tsDRuL7eLSFapSfA9hCX61l5nReQ7/Ef2r4ID1nxH9q0PJheXQhcc6xmq6D4OTzH9P8p7Fz40p6vUV1rFo7QTHqjkP/QrjQqWO3rewkW0zSxbzQ15PxqvhgUTaVh1uoXYcegrcUF1NS76DRjHWPELVUdO0Rs1HxW9I6lhX0Tgt7BRODWjqAHq6PcjhFeZhqyllZHrkmfOHHX718yt6/VxcKVlGePw9ymbA1up47lF0jCuNizKYO6+PaFqtnIMkI7S4+u34LNS1fQ3juWvwxtoYwd+UE95Fz7Vq4q/CjfwFnN+iGkIQtA6oIQhACptp6XNGJBvYfTlO/8ABXK8TRhzS07iCD3HRXpz4JKRjrU1Ug4mAc/Pr09nT3e9eOP8Lw9ha5zTvBI8Db0BS79fH3/ku2jzMtcwZIRuPHuVXtRK7k2G/wDHbxB9ysuP8+5V+0bfgL9Tmn2jXxSyuXot8SM5zj0lKVAsnmHRIVblMWb/AAipcrXZOS1bTfWsHibfiqUuT+zslqumP/3h/wDRqtPlexaKzRc7QYfVtqJnCKsZGZZCHPqczHNzk3Yxs0Ja07wMxsLBW+IzF2HUTm1QiaJJg9ss9VGZiDIA0SQSTSGxubcodw7hT4pg9NLUVhEFZnNRMx7oqSGrZcm5LZOTD4zztwdcaaq+xN+TDqUPpQ8CZzC+elng8nbaS0hghJe0mwbmB1Lr9K5Ten55HUENlKl7nzsfNyzxTT8pIJMScLlt23jmjbE243W1006VjQ5bLZeVvlVQIWHk3w1JuySvIDWACIztqLtJLXaWOlju3LDtdotzC6y+RqYpZoZbMRuKkbWvH8STzIzLbsanCPNrHkgX3kBdJ8rdxx61y6j1kYP52+0LpPHHuWKSTZrYhuNrE5qnKN8pO/j3FeOOOxfVFkjV4mySkizvaz5zgPf3Gy37RYWWT2Tpc0jpTuaLDzj7h7VrVzsZO8+Hodv2dT4abl1BCELTOgCEIQAhCEBz/GflEvnFRRnjjpUuPaVMnne0D1peM8e73ruU+RbHma+U3uyZ7LahV+PN/Z39mU/927lZRm4tx/hJ4w34CUfyk+GvhojeRFPnTMkw6JCrKbYdFX1ZUx1OpYUc5N4O+1RAeqaI+EjUgSpqF9pYz1PYfBwKu9CUjodXis0FTVM/1SWAGdzmsbRS1IALW/8AI5lh5rSR4lN41VCbD4ZHVkdSTOWiSR1TREuIe0RhlOM+cbspG4EncpdoKjDRO50mK1TXPdq2ComMcZsBa0YIYNNytqDZ2gnpWQwVD3NZKZ2zRzEzNmdmzPMnziHuBuOlch5JNpr5HQTTyMlsrfyuWMVEbckNQ2SJlVWVHKuAA05cZeYQdWk71z9jtAu6U+yFPBlkY6UmGGWONrnlzQZSXSykdL3E6ndu00C4Ox2g7gtzCTT4ren8mviFoTZkZlFdfbrdua1h3DDeaMfzs+8F0rjjtXM8HPw8X1jPaF0wDjjoWN8xo4vmQL5K7Tjiy+8ce9QVDuOOlDVibnZynyQM01dzj6d3qsrNQ0bMsbG9TWjwAUy4c5cUmz1FKPDBL0BCEKpcEIQgBCEIDAbSj9pk/p+6EpFxx1Jzaf5VJ/T91vqScXHvPuXcpeHHZHm8T4kt2Tx8cfgosTF4ZfMf90+tSx7+OLr5WN+DkH8j/ulRIx09UYNh0VdWFOMOiQrHKUzt2E3FfLrw5y+Zle5FiS6kpql8bg+N7mOG5zHFrh6Ql8yMyCxcYhtJWTjLLVSOba2XNlaR2htg703VXdR5kZlCSWhLVyS6LqPMjMpuRYssDP7RD9Y32rp444/BctwA/tMP1jfaupBR5nOxq/Utj5xx2JSQpt27jj0JN/HHUpRqxR0ylfmY1w6Wg+IUqUwk/AReYz2BNrgyVmz08HeKYIQhQWBCEIAQhCAwe1TbVLu0NPqt+CRi4461ZbYj9o/ob7T61WQ8fku1R8OOx5zFK1SW5O0qScXDu1p9nsUQ446lK3ce48dyvIwQeZzeM6KvrCnYzoq6tcqI9FYTcU7glNys7GZA8XJLS4tBABJu4C43KuLu1WGBYi2B75DckxvazLbR7rWJud29WuUqJ8LtqSHDHGMzl0cbDmMYe+zngXNmC13dXam6nBHk5WsYwxxRvkJkNjmvziXCzdxJG4WUFViVPNFE14kEkTGx2bkLHNBGpub7r+lTYntBHIKkAOBmMQbfLzY4wNDrvvm8UyMH7j8vy6+uV2QSYFMJeR5pOQSZg74MMP8AEXHcNEviOHvhy5ixwe3M0sdma5vWCr6mxAVLp2xwyvjdFDFePk87Mua17m1iS7wVXtbM3lhG0jLFGyIa3ALRci/Ta9vQpFOc3NRfQqbr7dRB3avt1W5s2LTZ4/tUP1jV1QccdS5Ts2f2qH6xq6sOOPwVkcrH862Pkp044uk3FNTbuOLJJx446VPka0Do2CH9ni8xvsTyRwP5PF5jfYnlw58z3PSU+RbIEIQqlwQhCAEIQgMZtoz4Zh62ewn3qnh446lf7cM50Tuxw8LH8VQQrs4Z3pI8/jVarImHHHUpouPzUKng38cXWSRqx1OYA6Lp2C4LDSYeK1tH5XO6NkmUAOec9jlZcHKGg62BJsd+5czyEktAuSSAOkm9gF0bY6HFqWZlLJBmprm7i5hEQ1N2ODr2v/CR09C0q+mv/T1CRSYTi8OKYnSAUTIREJ3TNsx2chtmhxyi4BtoRvKqv0rRNfiTKaJjWDJDHZrQ3nyvdqbdNnMXR2QUwxvMzKJjRvMgHTeWMNcR86wPba3Yqap2LlfjJr53sFOHxPj53Pe9jGNjZltpZ7b+gdemKNRKV9MhYc282eZUuo6CJrYw+R0kjmtaHNhhZld0dcrQO0hI43tFRYO9lFSULZJbNz6hpGb4ueQtc57zvt1EdgV7U4vG3GY6dxAJo35Cel75WksHaWw3/pVHif6P3yYt5dJNGIHSRSBt3co57GsDYrWtYlgN77tLdKpFrJT0tfckc/SRg3lBpKaFjWSzTHNI1oDmQsjc6QlwsSNW6dJsEhitbh2DuipIaJs878ty7Lns45QXyOaTcm9mgW7tFoqyvZ/rEEDiMwpJyzzpJI9B25YXH0FZ3FdipX4v5fNIwU3KQvF3c4vaI2RxBvbIB6D1lIvJKTytfciw5t/hlOZ8PiFNFnlqm5iGMzOijGaRpNtWm7bjcvu0WG4NQzNqKmGJuZgZHC2IFpLSS+XkmizjzmjM4aZR1pnGI+Vxyib0QU88/wBs8l7beC5r+lut5TEpG3uImxxDs5uc+uQq1NOVo38v5DKTAZc1bE6wbmlzWGgbck2AG4Dcuq8cdq5Nsz8rg+sC6zxx2LowOL7R51seJTpxx6Em9NyccdaTkWQ04HSME+TxeY32J1JYJ8ni+rZ7AnVwp8zPS0+RbAhCFUuCEIQAhCEBl9uBpF3v9jVnIOOOtaXbccyM/wAzvYs1Dx+XvXXwvhI4OP8AFfy+xMOOOtTwcfkoBx+Snh446lmkaUdTmrnFryWkgteSCNCCHaEFN1e3WJBuUVjgPMhzfayX9aUqvjv89/3iqisWBxT1R6nyIYcTnZN5QyZ4muTymYl5J0N3Hfcaapqt2nrZXslkq5HPjN4zfLkJBGZoaAAbEi9r6qqcviWXQg1ey2DT4vUvElW5r2RhwlfeR1w4ZGgZgbauNwdLLo+B7JuopBW4hibphC13J8q54ZEXAtc+8jzrlJAAtvO9cNBsbjQjcRvHcvcsrnfGc51t2Yk27rrHOm5ZXstgmXu2G0Jqq59XE5zQC1sJBLXNZHo1wI1BJzO7MyVrdpa2YsdLVyuMbg5l3WDXN1DgBYZh171UoV1FJEFs3aetEnLeVy8pk5PPmu7JfNluei+qr6uqfK90sjy97jdzjvcesqFClJLQFnsz8rg+sC6yuTbNfK4PrAus8cdqywOP7R8RbEcnHH4pSVNyccdSUlWQ0oHR8E+TxeY32BOpLBv3EXmN9gTq4U+ZnpqfItgQhCqXBCEIAQhCAzm2w+Dj88/dKy8XHHUtbtbTukYxrRc5id9uj81Rw4JMdzR9ocehdPDVYRppNnGxtGpKq3GLYoOOOpTw8cdSdGAT/NH2h61LFgUw/hH2h4rNKtT+I1I4arflf0OSVn7yTz3/AHiqesV1iLbTSg7xJID6HkL7RYEKiJzmOLpeVZEGNyWjEhY1ss1zmyFz8t2tNi3XeqXSzPRLQ94RhEPkjZpoAWPFW585c9pgETGtgYyzg1z3Sh3NIJN+xNu2DjziNs7i4FocDyTSWmeKI1DddIix8rhfU8mNTdVMWyLjAZnSMabMka4uPJthMU0z3vOQuvljZYD6QdejUn6P5MjWiSPluVcx7STlyGWOBkjeZuzOeTcg2Gg0KxNq/MCx/wBBowyGYOaLU7nWkMXJz5oJXiYgakskkgaTu0sBzSlWYDSU9aYnS52Mge9zpmtezlHP5KNwaMmdvOY/LfoPOcNVX4ZscXmB0k8bGTOiAtnMhEjBMbDLYERHNc6C4616l2PzZ5Y54WxBjZQHufdrZmGSFjnOY3nuYCd3VcahRl8QLmXAqCOTyk89uepfyLZIzEBAJy2IlzSSS6OK2pvylrWAzR1WzNC+VwFUWEygXDqZsYby7ocrWMYACRG8giwHN0IKqRsiI6kQTTRuywzTShkjGcmYmutG+R7S2O7w0ZiNxJspzsYx7xyFW0xusWEskc8MfP5NGTlbZ2aQbxbmgu00Bf5AkrcFpIIKmZruUOV8cbXyQkxP5SCM8wDM93OlcHjKA0N0uTbGrUQbFuN81TGzLEyWQkHIxsusQDyQH5hcnLu7SbKDEtlXQwvmMwcGMgfZrdHCc5bgl3xWmzb2vmNi1u9XjJLK5Ahs18rg+sautcce9cp2SiL62nYDYulYO65su5fqzJ9I3/ssnawhzM5mNw9SpJOCvl6Gfk4460rJxx1LSzbOPH/I3wKr6jBHD+MeBU95pfEascHXXu/Y2WD/ALiLzG+xOJTCWWhjB6GhNrkyd22d6CtFIEIQqlgQhCAEIQgK7Ft7fT+C9Ui8Yoec0dhUlIgHkIQgPz9jPyif66b/ANHKvfjNRG0RxzOY1rg8Bthzg7MCTa5s7Wx0urDGPlE/103/AKOVDWLqpJrMhjVPtXVsL3csXOc0tu6xyE8mM7RuzZYmt1uLE6JNmOVIIIqZAQQb5je4e6S5PSc73O73FIOXxTwroVHZcXqHOD3VEhcCSCXuuC5gjJBvvLGtb3ABeBiMwzgTyDlGtZJZ7/hGNbla1+vOAbzQDuGiVQlkQMz4hM8lz55HuLeTJc97iWb8hJOrb623L5FXStN2zSNOXk7te8HJvyaH4tyebuS6FNgMtxCYANE8oAaWACR4AYd7AL6N7Ny+TV0rwQ+aRwJBIc97gSBYEgnUgaXS6EsC72I/3Ck+vj9q/Sy/NOxP+4Un18f3gv0stLFcyLRFqlU9YruoaqesYtUsW2H/ALtnmhMJfD/3be5MIAQhCAEIQgBCEICrxA3k7gPxU9Klqk3kd4epNUyAcQhCA/P+IRufUTBrS48rLo0En47ugL1DsfUSnnARg9fOee5rfxIXZqXZ+NpJ6yXENAaCSbm9tSe1WcFMxnxWgdw19JW88TGOmZgfay0/T/t/0cxwf9GDALvZmPXKbD0Mbu9KQxr9GNrmMPZ5vwjPD4w8V2JCx97lfRFe7PVTd/zy0PzVX7KVUVyGcoOuM3PpadfAFUj2kGxBBG8EEEd4K/U1Vh0Unx4wT17j4jVZ7FtiYZhua7qEjQbdzhqFnjiKctciv70NVxbZP6P+z88oXTcZ/Rla5YHs7vhGf3DxWQr9kaqPVrRIOth19LTY+F1mWeazCxEL2eT9cihQrGiwKplNmwuFtCXDIB3l1vUtfgf6N3yWMhc/sZzWemR2/wBFlOiuyZV4Rdr3fRZszWxH+4Un18f3l+llltntjIqYtcA1pBBswbyPnPOrlqVz8ROMpLhdzNSlJq7VjxKqmvVrMdFUV5WuZCzw/wDdt7kwlMLdeMdlx602gBCEIAQhCAEIUdQ6zXHsKAqwbknrJKcpknEnaZANoQhACEIQAvhK8yyBoLnGwGpPUFlNqMZZNE6nid8bKJHEANERNn5S4izrajuVXUhGSUpWuXjTnJNxV7C2I7SzTPDKbMxhPMLGZp5i0lr8rHc1sYJAMjiB36pUYFW2zZJ9wHy1vK2BDgLcnk0JOl+g67rlHA3ki4tyl5c4Oa/KGRRkwtjHMeA1oNyRb4uY23nxWQRsyscx5Li5vx5M2UvLc18oBddhAHUe1Xlj6NPl0+ZEcFXqa5PomhzCdpJYn8nUOc9gcGvMjQyenfI4ZOWF8vJ2Js9unduWtqKGGUXcxrr7nDeR2OCxM1KyVsbWMaA0SMec5PKRPLmyN+KBocrwesNPWrrZ/GXNZHTzMeZA1rS4ZDm6Nzd1rW7LaqJ4ujZTi7N7hYSrnGcb22LWmwOBhvkzHozG9vRuViAvqFaU5S1dzFCnGCtFWBCEKpchqNyp6wq6nGip6hmqAcwZ3NI7b+I/JWCrsKFrjs9isUAIQhACEIQAlcRdZh7bBNJLEzo0dt/D/KAViT1MEpGxPwBASoQhAeRICS0EXFri4uL7rjo3HwXpZTD4Y6WprnsbYcnSlxc4kveTMS573XJNnDU9AHQFf/6pFcDMdcoHMktzzlZc2s253X33CAcKw+0eCGBnlOYODXAyNy7mF2pYNQXC+l1uF5cLgg9Oixzo05yTmr2MlOtOnfgdrmN2fjjcx7dX1DLiwe5okje/OyVtiOY4PDr9pCf8heXGPkWZmjlMxdNbM4/wm+jt/O7FX1+ykkZvT2extzG3O6OWAWvlimFyczrmzgWi/pUfkde8cm4T2u0EvqY2gA2NyYmBzgLa2IPrV6mCpzd4SsumRruvX95tv0ZHjtY1pa2EOzsb8KGue+8rmOEdOy7jzruLjYGzQStJg+C8nklfIXS25xADWkka822nvSeA7MtiLZJcrntHMYwWigNzcxjeSdLudcm29aTMpqUqWSitPP1MlOpVs+J6n1C+XUFd8W1zq6MaEg2L2g6jsQhuyGELP4Q+cuvPCIyJS1li4lzOTedbuN9QNdL9S0ChO5WE+JXPhCqqxltVbJLEWXaVJcgwx/O9BVoqTDNHgcbldoAQhCAEIQgBV9eeeB1D2qwVVO67z328EAxEE1Glozovs1cxguXAelANr4Ss3UbVxg2BCRqNrG9aA0MsMF5C5oJkyZ7kkOyfFuN3RuSMsUQc0iSzGlhyjlLkxnM25z5SL5d7SbC191snV7Rt3i5VY7HpXbme1AdIlxlnWk348sGyunO9p8Cp2STk/EPgUBsjj6+DHexZZjZumM+BUgbL9E/7LkBqRjC9txdZlsMnzHeBXhxmG6J5/pcoBr2YqFI6uY4WcAR1EAjTXcVjOXl6Yn+Dvco5K6Qf8T/BykG3iqoWm4a0HrAA9ibjr2H+ILnzK6Qj924d4K8NxYjexw9BQWSOkipb84LzIQelc/Zi7ekkJmHGLatlHigNIW5JAe0K7WWpsWbKAHEA9B6PT1LS055o7kBIhCEAIQhAeZH2BPULrMz1r90bbn5ztB4bytLO27SB0jpSUWHHpcPQB7SgM2aGpk1fPbsaDp3IGzsZ+PLI7uLR71rWUjB0X7yVK2MDcAPQgMpFs3TfQvcetznfhZNR4BCN1M30j+4rRoQFLFhAG6Jg9DFO3Dj1NHHYFZoQCQpHbs2neUCi7vX706hAKeSeb4H3r75L5v2fzTSEAr5H2j7P5o8j7R4fmmkIBM0Pb6j715ND/N6k8hAIeQH5w9a8mid1+tWKEBUPw89LAfQ0qB+HN6YW/YHuV8hAZs4fGNzGjuCs8IcQCzoG7uVg5oO8XXlkTQbgAdyA9oQhACEIQAhCEAIQhACEIQAhCEAIQhACEIQAhCEAIQhACEIQAhCEAIQhACEIQAhCEB//2Q==' },
@@ -107,22 +85,52 @@ const data = [
   }
 ];
 
-const ProductList = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const navigate = useNavigate();
+  const columns = [
+    { Header: 'Barcode', accessor: 'barcode' },
+    { Header: 'Product', accessor: 'product' },
+    { Header: 'Category', accessor: 'category' },
+    { Header: 'Description', accessor: 'description' },
+    { Header: 'Stock', accessor: 'stock' },
+    { Header: 'Purchase Price', accessor: 'purchasePrice' },
+    { Header: 'Sale Price', accessor: 'salePrice' },
+    {
+      Header: 'Image',
+      accessor: 'image',
+      Cell: ({ cell: { value } }) => <img src={value} alt="Product" style={{ width: '50px' }} />,
+    },
+    {
+      Header: 'Actions',
+      accessor: 'actions',
+      Cell: ({ row }) => (
+        <div>
+          <FaList
+            className="text-info me-2"
+            style={{ cursor: 'pointer' }}
+           
+            onClick={() => navigate(`/barcode`)}
+            // onClick={() => navigate(`/barcode?productId=${row.original.barcode}`)}
+          />
+          <FaEye className="text-primary me-2" style={{ cursor: 'pointer' }} />
+          <FaEdit className="text-success me-2" style={{ cursor: 'pointer' }} />
+          <FaTrash className="text-danger me-2" style={{ cursor: 'pointer' }} />
+        </div>
+      ),
+    },
+  ];
 
-    const handleAddProduct = () => {
-        navigate('/addproduct');
-    };
+  const handleAddProduct = () => {
+    navigate('/addproduct');
+  };
+
   return (
-    <div className='admin-ProductList-container'>
+    <div className="admin-ProductList-container">
       <AdminSidebar onToggleSidebar={setCollapsed} />
       <div className={`admin-ProductList-content ${collapsed ? 'collapsed' : ''}`}>
-      <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-            <h2 className="m-0">Product List</h2>
-            <button className="btn btn-primary" onClick={handleAddProduct}>
-                Add Product
-            </button>
+        <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
+          <h2 className="m-0">Product List</h2>
+          <button className="btn btn-primary" onClick={handleAddProduct}>
+            Add Product
+          </button>
         </div>
         <hr />
         <DataTable columns={columns} data={data} />

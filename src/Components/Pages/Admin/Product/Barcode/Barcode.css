@@ -1,0 +1,88 @@
+.admin-Barcode-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .admin-Barcode-content {
+    margin-top: 60px; /* Adjust based on header height */
+    margin-left: 200px; /* Adjust based on sidebar width */
+    padding: 20px;
+    width: calc(100% - 220px); /* Adjust width based on sidebar width */
+    transition: margin-left 0.3s ease, width 0.3s ease;
+  }
+  
+  .admin-Barcode-content.collapsed {
+    margin-left: 50px; /* Increased margin when collapsed */
+    width: calc(100% - 70px); /* Adjusted width to account for increased margin */
+  }
+
+  
+  @media (max-width: 1024px) {
+    .admin-Barcode-container {
+      flex-direction: column;
+    }
+  
+    .admin-Barcode-content {
+      margin-left: 0;
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+    }
+  
+    .admin-Barcode-content.collapsed {
+      margin-left: 50px; /* Increased margin to move content right */
+      width: calc(100% - 70px); /* Adjusted width */
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-Barcode-container {
+      flex-direction: column;
+    }
+  
+    .admin-Barcode-content {
+      margin-left: 0;
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+    }
+  
+    .admin-Barcode-content.collapsed {
+      margin-left: 0;
+      width: 100%;
+    }
+}  
+
+
+
+.barcode-card {
+    background-color: #ffffff; /* Card background color */
+    border: 1px solid #ddd;   /* Card border */
+    border-radius: 8px;       /* Rounds the corners of the card */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+    padding: 20px;            /* Adds spacing inside the card */
+    margin-top: 20px;         /* Adds spacing above the card */
+  }
+  
+  
+  
+  .barcode-card-body {
+    padding: 20px; /* Spacing inside the body */
+  }
+  
+  .barcode-header {
+    background-color: #b4ecf5; /* Header background color */
+    color: #177582;           /* Header text color */
+    padding: 10px;            /* Adds spacing around the text */
+    border-radius: 5px;       /* Optional: Rounds the corners */
+    text-align: center;       /* Centers the text */
+    border: 0.5px solid #177582; /* Solid border around the headers */
+  }
+  label {
+    font-weight: bold; /* Makes the label text bold */
+  }
+  
+  
+  
+  
+  
