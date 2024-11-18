@@ -3,21 +3,27 @@ import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css'
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (email === 'admin@gmail.com' && password === 'admin@123') {
-      navigate('/dashboard'); // Navigate to admin path
-    } else if (email === 'user@gmail.com' && password === 'user@123') {
-      navigate('/userpos'); // Navigate to user path
-    } else {
-      alert('Invalid credentials');
+    try {
+      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const { role } = response.data.user;
+      if (role === 'Admin') {
+        navigate('/dashboard'); // Navigate to admin path
+      } else if (role === 'User') {
+        navigate('/userpos'); // Navigate to user path
+      } else {
+        alert('Invalid role');
+      }
+    } catch (error) {
+      alert('Invalid email or password');
     }
   };
 
