@@ -16,6 +16,8 @@ import UserOrderlist from "./Components/Pages/Users/Orderlist/Orderlist";
 import UserPOS from "./Components/Pages/Users/POS/POS"
 import Login from "./Components/Pages/Login/Login";
 import Barcode from "./Components/Pages/Admin/Product/Barcode/Barcode";
+import ViewProduct from "./Components/Pages/Admin/Product/ViewProduct/ViewProduct";
+import EditProduct from "./Components/Pages/Admin/Product/Editproduct/EditProduct";
 
 
 
@@ -40,8 +42,10 @@ function App() {
                     <Route path="/userchangepassword" exact element={<UserChangePassword/>}/>
                     <Route path="/userorderlist" exact element={<UserOrderlist/>}/>
                     <Route path="/userpos" exact element={<UserPOS/>}/>
-                    <Route path="/barcode" exact element={<Barcode/>}/>
+                    <Route path="/barcode/:id" exact element={<Barcode />} />
                     <Route path="/" exact element={<Login/>}/>
+                    <Route path="/viewproduct/:id" exact element={<ViewProduct/>}/>
+                    <Route path="/editproduct/:id" exact element={<EditProduct/>}/>
                 </Routes>
         
             </div>

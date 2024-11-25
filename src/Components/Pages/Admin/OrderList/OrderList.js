@@ -1,47 +1,68 @@
-// OrderList.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../../../Shared/AdminSidebar/Sidebar';
 import DataTable from '../../../DataTable/DataTable';
 import { FaPrint, FaEdit, FaTrash } from 'react-icons/fa';
+import axios from 'axios';
 import './OrderList.css';
 
 const OrderList = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Define table columns
-  const columns = React.useMemo(() => [
-    { Header: 'Invoice ID', accessor: 'invoiceId' },
-    { Header: 'Order Date', accessor: 'orderDate' },
-    { Header: 'Total', accessor: 'total' },
-    { Header: 'Paid', accessor: 'paid' },
-    { Header: 'Due', accessor: 'due' },
-    { Header: 'Payment Type', accessor: 'paymentType' },
-    {
-      Header: 'Actions',
-      accessor: 'actions',
-      Cell: () => (
-        <div>
-          <FaPrint className="text-info me-2" />
-          <FaEdit className="text-success me-2" />
-          <FaTrash className="text-danger me-2" />
-        </div>
-      ),
-    },
-  ], []);
+  const columns = React.useMemo(
+    () => [
+      { Header: 'Invoice ID', accessor: 'invoice_id' },
+      { Header: 'Order Date', accessor: 'orderdate' },
+      { Header: 'Subtotal', accessor: 'subtotal' },
+      { Header: 'Discount', accessor: 'discount' },
+      { Header: 'SGST', accessor: 'sgst' },
+      { Header: 'CGST', accessor: 'cgst' },
+      { Header: 'Total', accessor: 'total' },
+      { Header: 'Payment Type', accessor: 'payment_type' },
+      { Header: 'Due', accessor: 'due' },
+      { Header: 'Paid', accessor: 'paid' },
+      {
+        Header: 'Actions',
+        accessor: 'actions',
+        Cell: ({ row }) => (
+          <div>
+            <FaPrint className="text-info me-2" onClick={() => handlePrint(row.original)} />
+            <FaEdit className="text-success me-2" onClick={() => handleEdit(row.original)} />
+            <FaTrash className="text-danger me-2" onClick={() => handleDelete(row.original)} />
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
-  // Sample data for table rows
-  const data = React.useMemo(() => [
-    { invoiceId: 45, orderDate: '2024-11-12', total: 309, paid: 309, due: 0, paymentType: 'Check' },
-    { invoiceId: 44, orderDate: '2023-03-17', total: 1442, paid: 1500, due: 58, paymentType: 'Cash' },
-    { invoiceId: 43, orderDate: '2013-03-17', total: 787.95, paid: 0, due: 787.95, paymentType: 'Cash' },
-    { invoiceId: 42, orderDate: '2023-03-14', total: 206, paid: 206, due: 0, paymentType: 'Cash' },
-    { invoiceId: 41, orderDate: '2023-03-14', total: 772.5, paid: 800, due: -27.5, paymentType: 'Cash' },
-    { invoiceId: 40, orderDate: '2023-03-14', total: 772.5, paid: 800, due: -27.5, paymentType: 'Cash' },
-    { invoiceId: 39, orderDate: '2023-03-09', total: 1081.5, paid: 1100, due: -18.5, paymentType: 'Cash' },
-    { invoiceId: 38, orderDate: '2023-03-08', total: 23228.5, paid: 25000, due: -1773.5, paymentType: 'Cash' },
-    { invoiceId: 37, orderDate: '2023-03-08', total: 865.2, paid: 865.2, due: 0, paymentType: 'Check' },
-    { invoiceId: 36, orderDate: '2023-03-08', total: 19000.35, paid: 19000.35, due: 0, paymentType: 'Card' },
-  ], []);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/orders');
+        setOrders(response.data);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const handlePrint = (order) => {
+    console.log('Printing order:', order);
+  };
+
+  const handleEdit = (order) => {
+    console.log('Editing order:', order);
+  };
+
+  const handleDelete = (order) => {
+    console.log('Deleting order:', order);
+  };
 
   return (
     <div className="admin-Order-container">
@@ -49,7 +70,11 @@ const OrderList = () => {
       <div className={`admin-Order-content ${collapsed ? 'collapsed' : ''}`}>
         <h1>Order List</h1>
         <hr />
-        <DataTable columns={columns} data={data} />
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <DataTable columns={columns} data={orders} />
+        )}
       </div>
     </div>
   );

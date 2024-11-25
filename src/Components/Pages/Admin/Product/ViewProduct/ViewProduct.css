@@ -1,0 +1,400 @@
+.admin-viewproduct-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .admin-viewproduct-content {
+    margin-top: 60px; /* Adjust based on header height */
+    margin-left: 200px; /* Adjust based on sidebar width */
+    padding: 20px;
+    width: calc(100% - 220px); /* Adjust width based on sidebar width */
+    transition: margin-left 0.3s ease, width 0.3s ease;
+  }
+  
+  .admin-viewproduct-content.collapsed {
+    margin-left: 50px; /* Increased margin when collapsed */
+    width: calc(100% - 70px); /* Adjusted width to account for increased margin */
+  }
+
+  
+  @media (max-width: 1024px) {
+    .admin-viewproduct-container {
+      flex-direction: column;
+    }
+  
+    .admin-viewproduct-content {
+      margin-left: 0;
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+    }
+  
+    .admin-viewproduct-content.collapsed {
+      margin-left: 50px; /* Increased margin to move content right */
+      width: calc(100% - 70px); /* Adjusted width */
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-viewproduct-container {
+      flex-direction: column;
+    }
+  
+    .admin-viewproduct-content {
+      margin-left: 0;
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+    }
+  
+    .admin-viewproduct-content.collapsed {
+      margin-left: 0;
+      width: 100%;
+    }
+}  
+
+
+.admin-viewproduct-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.admin-viewproduct-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.barcode-card {
+  background: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.top-line {
+  height: 4px;
+  background-color: green;
+  border-radius: 5px 5px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.barcode-card-header h4 {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.header-underline {
+  height: 0.5px;
+  background-color: green;
+  margin-bottom: 10px;
+}
+
+.barcode-header {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.detail-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.detail-box label {
+  margin: 0;
+  font-weight: 500;
+  color: #555;
+}
+
+.image-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.image-box img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+
+
+.admin-viewproduct-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.admin-viewproduct-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.barcode-card {
+  background: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.top-line {
+  height: 4px;
+  background-color: green;
+  border-radius: 5px 5px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.barcode-card-header h4 {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.header-underline {
+  height: 0.5px;
+  background-color: green;
+  margin-bottom: 10px;
+}
+
+.barcode-header {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.detail-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+.row-line {
+  height: 1px;
+  background-color: #dcdcdc;
+  margin: 5px 0;
+}
+
+.image-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.image-box img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+
+
+
+
+
+.admin-viewproduct-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.admin-viewproduct-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.barcode-card {
+  background: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.top-line {
+  height: 4px;
+  background-color: green;
+  border-radius: 5px 5px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.barcode-card-header h4 {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.header-underline {
+  height: 0.5px;
+  background-color: green;
+  margin-bottom: 10px;
+}
+
+.barcode-header {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Ash-colored thin box for all labels */
+.details-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.detail-row {
+  padding: 8px 0;
+  font-weight: 500;
+  color: #555;
+}
+
+.row-line {
+  height: 1px;
+  background-color: #dcdcdc;
+}
+
+/* Image box styling */
+.image-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.image-box img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+
+
+
+.admin-viewproduct-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.admin-viewproduct-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.barcode-card {
+  background: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.top-line {
+  height: 4px;
+  background-color: green;
+  border-radius: 5px 5px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.barcode-card-header h4 {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.header-underline {
+  height: 0.5px;
+  background-color: green;
+  margin-bottom: 10px;
+}
+
+.barcode-header {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* White-colored thin box for all labels */
+.details-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.detail-row {
+  padding: 8px 0;
+  font-weight: 500;
+  color: #555;
+}
+
+.row-line {
+  height: 1px;
+  background-color: #dcdcdc;
+}
+
+/* Image box styling */
+.image-box {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.image-box img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+
+
+/* Style for the "View Product" header */
+.barcode-card-header h4 {
+  font-weight: normal; /* Removes bold styling */
+  color: #333; /* Optional: change the text color if needed */
+}
+
+/* Style for "Product Details" and "Product Image" headers */
+.barcode-header {
+  color: darkgreen; /* Sets the color to dark green */
+  font-weight: bold; /* Keeps them bold if needed */
+}
+
+/* General styling */
+.details-box .detail-row label {
+  font-weight: normal; /* Ensures all labels are not bold */
+}
+
+
+
+/* Underline below the "View Product" header */
+.header-underline {
+  height: 0.5px; /* Adjust thickness if needed */
+  background-color: #b2b2b2; /* Ash color */
+  
+}
