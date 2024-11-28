@@ -1,12 +1,210 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import UserSidebar from '../../../Shared/UserSidebar/Sidebar';
 import { FaList } from "react-icons/fa";
 import DataTable from '../../../DataTable/DataTable';
 import { FaPrint, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaMoneyBillWave, FaRegCreditCard } from 'react-icons/fa';
+import axios from 'axios';
 import './POS.css';
 
 const POS = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [barcode, setBarcode] = useState('');
+  const [products, setProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [taxDiscount, setTaxDiscount] = useState({ sgst: 0, cgst: 0, discount: 0 });
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [paymentType, setPaymentType] = useState('CASH');
+  const [paidAmount, setPaidAmount] = useState(0);
+  const [dueAmount, setDueAmount] = useState(0);
+
+
+   // Load products from localStorage on initial render
+   useEffect(() => {
+    const savedProducts = JSON.parse(localStorage.getItem('products'));
+    if (savedProducts) {
+      setProducts(savedProducts);
+    } else {
+      fetchProducts();
+    }
+  }, []);
+
+  // Fetch products from the backend (if needed)
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/get-searchproducts');
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products from database:', error);
+    }
+  };
+
+  // Fetch tax and discount rates
+  useEffect(() => {
+    const fetchTaxDiscount = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/taxdiscount');
+        const latestTax = response.data[response.data.length - 1]; // Get the latest tax and discount record
+        setTaxDiscount(latestTax);
+      } catch (err) {
+        console.error('Error fetching tax and discount:', err);
+      }
+    };
+    fetchTaxDiscount();
+  }, []);
+
+  // Calculate Subtotal and Total whenever products or taxDiscount change
+  useEffect(() => {
+    const newSubtotal = products.reduce((acc, product) => acc + product.total, 0);
+    setSubtotal(newSubtotal);
+
+    const discountAmount = (newSubtotal * taxDiscount.discount) / 100;
+    const sgstAmount = (newSubtotal * taxDiscount.sgst) / 100;
+    const cgstAmount = (newSubtotal * taxDiscount.cgst) / 100;
+
+    setTotal(newSubtotal - discountAmount + sgstAmount + cgstAmount);
+  }, [products, taxDiscount]);
+
+  // Save products to localStorage whenever products are updated
+  useEffect(() => {
+    if (products.length > 0) {
+      localStorage.setItem('products', JSON.stringify(products));
+    }
+  }, [products]);
+
+  // Fetch filtered products based on search query
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      axios
+        .get(`http://localhost:5000/products?search=${searchQuery}`)
+        .then(response => setFilteredProducts(response.data))
+        .catch(err => console.error('Error fetching products:', err));
+    } else {
+      setFilteredProducts([]);
+    }
+  }, [searchQuery]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleBarcodeChange = async (e) => {
+    const inputBarcode = e.target.value;
+    setBarcode(inputBarcode);
+
+    if (inputBarcode.trim()) {
+      try {
+        const response = await axios.get(`http://localhost:5000/product-by-barcode/${inputBarcode}`);
+        const product = response.data;
+
+        const existingProduct = products.find(p => p.barcode === product.barcode);
+        let updatedProducts;
+        if (existingProduct) {
+          updatedProducts = products.map(p =>
+            p.barcode === product.barcode
+              ? { ...p, qty: p.qty + 1, total: (p.qty + 1) * p.price }
+              : p
+          );
+        } else {
+          updatedProducts = [...products, { ...product, qty: 1, total: product.price }];
+        }
+        setProducts(updatedProducts);
+        setBarcode('');
+      } catch (err) {
+        console.error('Error fetching product:', err);
+      }
+    }
+  };
+
+  const handleProductSelect = (product) => {
+    const existingProduct = products.find(p => p.id === product.id);
+    let updatedProducts;
+
+    if (existingProduct) {
+      updatedProducts = products.map(p =>
+        p.id === product.id
+          ? { ...p, qty: p.qty + 1, total: (p.qty + 1) * p.price }
+          : p
+      );
+    } else {
+      updatedProducts = [...products, { ...product, qty: 1, total: product.price }];
+    }
+    setProducts(updatedProducts);
+    setSearchQuery('');
+    setFilteredProducts([]);
+  };
+
+  const handleIncrement = (index) => {
+    const updatedProducts = products.map((p, i) =>
+      i === index ? { ...p, qty: p.qty + 1, total: (p.qty + 1) * p.price } : p
+    );
+    setProducts(updatedProducts);
+  };
+
+  const handleDecrement = (index) => {
+    const updatedProducts = products.map((p, i) =>
+      i === index && p.qty > 1
+        ? { ...p, qty: p.qty - 1, total: (p.qty - 1) * p.price }
+        : p
+    );
+    setProducts(updatedProducts);
+  };
+
+  const handleDelete = (index) => {
+    setProducts(products.filter((_, i) => i !== index));
+  };
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; // Returns YYYY-MM-DD
+  };
+  
+  const handleSaveOrder = async () => {
+    const orderDetails = {
+      subtotal,              // Frontend-calculated subtotal
+      discount: (subtotal * taxDiscount.discount) / 100, // Frontend-calculated discount
+      sgst: (subtotal * taxDiscount.sgst) / 100,         // Frontend-calculated SGST
+      cgst: (subtotal * taxDiscount.cgst) / 100,         // Frontend-calculated CGST
+      total,                 // Frontend-calculated total
+      paid: paidAmount,      // Paid amount
+      due: total - paidAmount, // Due amount
+      paymentType,           // Selected payment type
+      products,              // Product list
+      orderDate: new Date().toISOString(), // Current date-time
+      taxDiscount,           // Pass tax rates for reference
+    };
+  
+    const productDetails = products.map((product) => ({
+      barcode: product.barcode,
+      product_id: product.id,
+      product_name: product.productname,
+      qty: product.qty,
+      rate: product.price,
+      saleprice: product.total,
+      orderdate: new Date().toISOString(),
+    }));
+  
+    try {
+      // Save order details
+      await axios.post('http://localhost:5000/save-order', orderDetails);
+  
+      // Save product details
+      // await axios.post('http://localhost:5000/save-productdetails', productDetails);
+  
+      alert('Order saved successfully!');
+      setProducts([]);
+      setPaidAmount(0);
+      setDueAmount(0);
+      localStorage.removeItem('products');
+    } catch (err) {
+      console.error('Error saving order or product details:', err);
+      alert('Failed to save order. Please try again.');
+    }
+  };
 
   return (
     <div className="admin-UserPOS-container d-flex">
@@ -25,9 +223,37 @@ const POS = () => {
                       <FaList />
                     </span>
                   </div>
-                  <input type="text" className="form-control" placeholder="Scan Barcode" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Scan Barcode"
+                    value={barcode}
+                    onChange={handleBarcodeChange}
+                  />
                 </div>
-                <input type="text" className="form-control mb-3" placeholder="Select OR Search"  />
+                <div className="dropdown">
+                  <input
+                    type="text"
+                    className="form-control mb-3"
+                    placeholder="Select OR Search"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    aria-describedby="product-search-dropdown"
+                  />
+                   {filteredProducts.length > 0 && (
+                    <div className="dropdown-menu show" aria-labelledby="product-search-dropdown">
+                      {filteredProducts.map(product => (
+                        <button
+                          key={product.id}
+                          className="dropdown-item"
+                          onClick={() => handleProductSelect(product)}
+                        >
+                          {product.productname}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div
                   style={{
                     maxHeight: '400px', // restrict height to make scrollbars appear
@@ -49,90 +275,134 @@ const POS = () => {
                     </thead>
                     <tbody>
                       {/* Product rows dynamically added here */}
+
+                      {products.map((product, index) => (
+                        <tr key={index}>
+                          <td>{product.productname}</td>
+                          <td>{product.stock}</td>
+                          <td>{product.price}</td>
+                          <td>
+                            <button
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => handleDecrement(index)}
+                            >
+                              -
+                            </button>
+                            <span className="mx-2">{product.qty}</span>
+                            <button
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => handleIncrement(index)}
+                            >
+                              +
+                            </button>
+                          </td>
+                          <td>{product.total}</td>
+                          <td>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => handleDelete(index)}
+                            >
+                              <FaTrash />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               </div>
-              <div className="col-4 d-flex flex-column" style={{ paddingTop: '0' }}>
-                <div className="p-3 bg-light" style={{ flexGrow: 1 }}>
-                  {/* Summary Section */}
-                  {[
-                    { label: "SUBTOTAL (Rs)", placeholder: "", suffix: "Rs" },
-                    { label: "DISCOUNT (%)", placeholder: "", suffix: "%" },
-                    { label: "DISCOUNT (Rs)", placeholder: "", suffix: "Rs" },
-                    { label: "SGST (%)", placeholder: "2.5", suffix: "%" },
-                    { label: "CGST (%)", placeholder: "2.5", suffix: "%" },
-                    { label: "SGST (Rs)", placeholder: "", suffix: "Rs" },
-                    { label: "CGST (Rs)", placeholder: "", suffix: "Rs" },
-                    { label: "TOTAL (Rs)", placeholder: "", suffix: "Rs" },
-                  ].map((item, index) => (
-                    <div className="form-group row align-items-center" key={index}>
-                       <label className="col-auto col-form-label text-right m-0">{item.label}</label>
-                        <div className="col">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder={item.placeholder}
-                            disabled={index % 2 === 0 && index !== 0} // Disable specific fields
-                          />
-                        </div>
-                        <div className="col-auto col-form-label m-0">{item.suffix}</div>
-                    </div>
-                  ))}
-
-                  <hr />
-
-                  {/* Payment Method */}
-                  <div className="form-group">
-                    <label>Payment:</label>
-                    <div className="d-flex">
-                      {["CASH", "CARD", "CHECK"].map((method, index) => (
-                        <div className="form-check form-check-inline" key={index}>
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="payment"
-                            id={`payment-${method}`}
-                            defaultChecked={index === 0}
-                          />
-                          <label className="form-check-label" htmlFor={`payment-${method}`}>
-                            {method}
-                          </label>
-                        </div>
-                      ))}
+              <div className="col-4 d-flex flex-column">
+                {/* Summary Section */}
+                <div className="p-3 bg-light">
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">Subtotal (Rs)</label>
+                    <div className="col-6">
+                      <input type="text" className="form-control" value={subtotal} disabled />
                     </div>
                   </div>
-
-                  <hr />
-
-                  {/* Due and Paid Fields */}
-                  {[
-                    { label: "DUE (Rs)", placeholder: "", suffix: "Rs" },
-                    { label: "PAID (Rs)", placeholder: "", suffix: "Rs" },
-                  ].map((item, index) => (
-                    <div className="form-group row align-items-center" key={index}>
-                     <label className="col-auto col-form-label text-right m-0">{item.label}</label>
-                      <div className="col p-0">
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">Discount (%)</label>
+                    <div className="col-6">
+                      <input type="text" className="form-control" value={taxDiscount.discount} disabled />
+                    </div>
+                  </div>
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">SGST (%)</label>
+                    <div className="col-6">
+                      <input type="text" className="form-control" value={taxDiscount.sgst} disabled />
+                    </div>
+                  </div>
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">CGST (%)</label>
+                    <div className="col-6">
+                      <input type="text" className="form-control" value={taxDiscount.cgst} disabled />
+                    </div>
+                  </div>
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">Total (Rs)</label>
+                    <div className="col-6">
+                      <input type="text" className="form-control" value={total} disabled />
+                    </div>
+                  </div>
+                  <div className="form-group row align-items-center">
+                  <label className="col-6">Paid (Rs)</label>
+                    <div className="col-6">
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={paidAmount}
+                        onChange={(e) => setPaidAmount(Number(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">Due (Rs)</label>
+                    <div className="col-6">
+                      <input type="number" className="form-control" value={total - paidAmount} disabled />
+                    </div>
+                  </div>
+                  <div className="form-group row align-items-center">
+                    <label className="col-6">Payment Type</label>
+                    <div className="col-6 d-flex">
+                      {/* Cash Radio Button */}
+                      <div className="form-check mr-2">
                         <input
-                          type="text"
-                          className="form-control"
-                          placeholder={item.placeholder}
-                          disabled={index === 0}
+                          type="radio"
+                          className="form-check-input"
+                          id="paymentCash"
+                          value="CASH"
+                          checked={paymentType === 'CASH'}
+                          onChange={(e) => setPaymentType(e.target.value)}
                         />
+                        <label className="form-check-label" htmlFor="paymentCash">
+                          <FaMoneyBillWave className="text-success" /> {/* Updated Cash Icon */}
+                          Cash
+                        </label>
                       </div>
-                      <div className="col-auto col-form-label m-0">{item.suffix}</div>
-                    </div>
-                  ))}
 
-                  {/* Save Order Button */}
-                  <div className="d-grid mt-3">
-                    <button className="btn btn-success">Save Order</button>
+                      {/* Cheque Radio Button */}
+                      <div className="form-check">
+                        <input
+                          type="radio"
+                          className="form-check-input"
+                          id="paymentCheck"
+                          value="CHECK"
+                          checked={paymentType === 'CHECK'}
+                          onChange={(e) => setPaymentType(e.target.value)}
+                        />
+                        <label className="form-check-label" htmlFor="paymentCheck">
+                          <FaRegCreditCard className="text-primary" /> {/* Updated Cheque Icon */}
+                          Cheque
+                        </label>
+                      </div>
+                     </div>
                   </div>
+                  <button className="btn btn-primary mt-2" onClick={handleSaveOrder}>
+                    Save Order
+                  </button>
                 </div>
               </div>
             </div>
-
-          
           </div>
         </div>
       </div>

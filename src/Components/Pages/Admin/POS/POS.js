@@ -18,6 +18,7 @@ const POS = () => {
   const [paidAmount, setPaidAmount] = useState(0);
   const [dueAmount, setDueAmount] = useState(0);
 
+
   // Load products from localStorage on initial render
   useEffect(() => {
     const savedProducts = JSON.parse(localStorage.getItem('products'));

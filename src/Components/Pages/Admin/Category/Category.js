@@ -24,7 +24,6 @@ const Category = () => {
     }
   };
 
-  console.log(categories)
 
   // Add or update a category
   const handleSave = async () => {

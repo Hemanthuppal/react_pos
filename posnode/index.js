@@ -5,6 +5,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bwipjs = require('bwip-js');
 
 
 
@@ -172,6 +173,75 @@ app.get('/api/orders', (req, res) => {
     res.status(200).json(results); // Send the results as JSON
   });
 });
+
+
+app.get('/generate-barcode/:id', (req, res) => {
+  const { id } = req.params;
+
+  // Log the received id to check if it's correct
+  console.log("Received ID:", id);
+
+  if (!id || isNaN(id)) {
+    return res.status(400).send('Invalid or missing product ID');
+  }
+
+  const query = 'SELECT barcode FROM products WHERE id = ?';
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send('Error fetching barcode');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('Product not found');
+    }
+
+    const barcode = String(results[0].barcode); // Ensure barcode is a string
+    bwipjs.toBuffer(
+      {
+        bcid: 'code128',
+        text: barcode,
+        scale: 3,
+        height: 10,
+        includetext: true,
+        textxalign: 'center',
+      },
+      (err, png) => {
+        if (err) {
+          console.error('Error generating barcode:', err);
+          return res.status(500).send('Error generating barcode');
+        } else {
+          res.setHeader('Content-Type', 'image/png');
+          res.send(png);
+        }
+      }
+    );
+  });
+});
+
+
+
+
+
+// Fetch product details by scanned barcode
+app.get('/product-by-barcode/:barcode', (req, res) => {
+  const { barcode } = req.params;
+
+  const query = 'SELECT * FROM products WHERE barcode = ?';
+  db.query(query, [barcode], (err, results) => {
+    if (err) {
+      res.status(500).send('Error fetching product');
+    } else if (results.length === 0) {
+      res.status(404).send('Product not found');
+    } else {
+      res.json(results[0]); // Return the product data
+    }
+  });
+});
+
+
+
+
 
 
 // Endpoint to add a new user
